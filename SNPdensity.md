@@ -22,6 +22,13 @@ mkdir ~/clouded_leopard/snpden/plots
 
 ```
 
+Navigate into and then copy the files from the original file to the snpden folder:
+```
+cd ~/clouded_leopard/snpden
+cp -r /scratch/projects/hpc-workshop/clouded_leopard/vcf .
+
+```
+
 Inside the `snpden` folder, the first step is to create new VCF files that only contain heterozygous positions. There are several ways to accomplish this, but for simplicity, we will use vcftools.
 
 ```r
@@ -29,8 +36,10 @@ module load VCFtools
 ```
 
 ```
-vcftools --gzvcf NN114296_HD_PASS_DP5.vcf.gz --recode --out NN114296_HD_PASS_DP5_hetsites --maf 0.1
+for i in /home/a/abresnan/clouded_leopard/snpden/vcf/*HD_PASS_DP5.vcf.gz ; do f=`basename $i .vcf.gz`; srun --cpus-per-task=1 --mem=8G --time=1:00:00 vcftools --gzvcf $i --recode --out $f.hetsites --maf 0.1 ; done
 
+
+#ORIGINAL CODE:
 vcftools --gzvcf NN114297_HD_PASS_DP5.vcf.gz --recode --out NN114297_HD_PASS_DP5_hetsites --maf 0.1
 
 vcftools --gzvcf NN114393_HD_PASS_DP5.vcf.gz --recode --out NN114393_HD_PASS_DP5_hetsites --maf 0.1
@@ -60,6 +69,10 @@ vcftools --vcf NN114296_HD_PASS_DP5_hetsites.recode.vcf --SNPdensity 1000000 --o
 You can do the same thing for the other available samples
 
 ```
+for i in *hetsites.recode.vcf ; do f=`basename $i .recode.vcf`; srun --cpus-per-task=1 --mem=8G --time=1:00:00 vcftools --vcf $i --SNPdensity 1000000 --out $f; done
+```
+```
+Original code:
 vcftools --vcf NN114297_HD_PASS_DP5_hetsites.recode.vcf --SNPdensity 1000000 --out NN114297_HD_PASS_DP5_hetsites
 
 vcftools --vcf NN114393_HD_PASS_DP5_hetsites.recode.vcf --SNPdensity 1000000 --out NN114393_HD_PASS_DP5_hetsites
